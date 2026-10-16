@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Binary Tree Lab</title>
+<style>
+:root{--navy:#082348;--teal:#087f8c;--paper:#f3f8fc;--ink:#152b45}*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,sans-serif;background:var(--paper);color:var(--ink)}
+header{background:linear-gradient(120deg,#082348,#087f8c);color:white;padding:24px 5vw}
+main{max-width:1100px;margin:22px auto;padding:0 16px;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+section{background:white;border-radius:16px;padding:18px;box-shadow:0 4px 18px #17365312}
+h1{margin:0 0 8px}h2{margin-top:0;color:#087f8c;font-size:1.2rem}
+button,select,input{font:inherit;padding:9px 12px;border:1px solid #b7cadb;border-radius:9px;margin:4px 2px}
+button{background:#087f8c;color:white;border:0;cursor:pointer}button.secondary{background:#e8f3f8;color:#173653}
+.tree{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin:14px}
+.node{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:2px solid #087f8c;background:#e1f7f3;font-weight:700;margin:5px}
+.node.active{background:#ffcc66;border-color:#c66a00;transform:scale(1.1)}
+pre{white-space:pre-wrap;background:#f1f6fa;padding:12px;border-radius:10px;min-height:44px}
+label{display:block;margin:8px 0} .muted{color:#587089;font-size:.93rem}.ok{color:#087d47;font-weight:700}
+</style></head><body>
+<header><h1>🌳 Binary Tree Lab</h1><div>Phiếu học tập online • Mô phỏng traversal • Observation Lab</div></header>
+<main>
+<section><h2>1. Cây mẫu</h2><p class="muted">Cây cố định: A là gốc; B,C là con; D,E là con của B; F,G là con của C.</p>
+<div class="tree" id="tree"><span class="node" data-v="A">A</span><span class="node" data-v="B">B</span><span class="node" data-v="C">C</span><span class="node" data-v="D">D</span><span class="node" data-v="E">E</span><span class="node" data-v="F">F</span><span class="node" data-v="G">G</span></div>
+<p class="muted">Sơ đồ tầng: A / B C / D E F G. Dùng quy tắc trái trước cho DFS.</p>
+<label>Chọn phép duyệt
+<select id="mode"><option value="pre">Preorder</option><option value="in">Inorder</option><option value="post">Postorder</option><option value="level">Level Order</option></select></label>
+<button onclick="runTraversal()">Mô phỏng duyệt</button><button class="secondary" onclick="clearTree()">Xóa tô sáng</button>
+<h3>Kết quả</h3><pre id="result">Chọn phép duyệt rồi nhấn Mô phỏng.</pre></section>
+<section><h2>2. Phiếu học tập</h2>
+<label>Họ tên <input id="student" placeholder="Tên học sinh"></label>
+<label>Lớp <input id="class" placeholder="Lớp"></label>
+<label>Preorder <input id="ansPre" placeholder="Ví dụ: A B D E C F G"></label>
+<label>Inorder <input id="ansIn" placeholder="Nhập thứ tự"></label>
+<label>Postorder <input id="ansPost" placeholder="Nhập thứ tự"></label>
+<label>Level Order <input id="ansLevel" placeholder="Nhập thứ tự"></label>
+<button onclick="checkAnswers()">Kiểm tra đáp án</button><button class="secondary" onclick="downloadReport()">Tải báo cáo JSON</button>
+<pre id="feedback">Bài làm được xử lý ngay trên trình duyệt này.</pre></section>
+<section><h2>3. Observation Lab</h2>
+<ol><li>Quan sát sơ đồ và dự đoán thứ tự thăm nút.</li><li>Chạy mô phỏng để kiểm chứng.</li><li>Giải thích vì sao kết quả thay đổi khi quy tắc thăm thay đổi.</li><li>Nêu một testcase khác: cây rỗng, một nút hoặc cây lệch.</li></ol>
+<label>Nhận xét của em <textarea id="reflection" rows="4" style="width:100%;font:inherit;padding:10px;border-radius:8px;border:1px solid #b7cadb" placeholder="Dự đoán, kiểm chứng, kết luận..."></textarea></label>
+</section>
+<section><h2>4. AI Challenge & đạo đức số</h2>
+<p><b>M2:</b> Yêu cầu AI tạo 10 testcase đếm lá. Tìm testcase biên còn thiếu và tự xác định kết quả mong đợi.</p>
+<p><b>M3:</b> Đưa chương trình lỗi cho AI phân tích; chạy thử và tạo phản ví dụ trước khi chấp nhận giải thích.</p>
+<p><b>M4:</b> Nhờ AI đặt 5 câu hỏi phản biện; trả lời bằng lập luận của mình.</p>
+<p class="muted">Không sao chép lời giải; kiểm chứng đầu ra; minh bạch việc dùng AI; tôn trọng bản quyền; không nhập dữ liệu cá nhân.</p></section>
+</main>
+<script>
+const tree={v:'A',l:{v:'B',l:{v:'D'},r:{v:'E'}},r:{v:'C',l:{v:'F'},r:{v:'G'}}};
+function dfs(n,mode,out){if(!n)return;if(mode==='pre')out.push(n.v);dfs(n.l,mode,out);if(mode==='in')out.push(n.v);dfs(n.r,mode,out);if(mode==='post')out.push(n.v)}
+function level(n){if(!n)return[];let q=[n],o=[];while(q.length){let x=q.shift();o.push(x.v);if(x.l)q.push(x.l);if(x.r)q.push(x.r)}return o}
+function runTraversal(){clearTree();let m=document.getElementById('mode').value,o=[];if(m==='level')o=level(tree);else dfs(tree,m,o);document.getElementById('result').textContent=o.join(' → ');let i=0;function hi(){if(i>=o.length)return;let el=document.querySelector('.node[data-v="'+o[i]+'"]');if(el)el.classList.add('active');i++;setTimeout(hi,450)}hi()}
+function clearTree(){document.querySelectorAll('.node').forEach(n=>n.classList.remove('active'))}
+const expected={ansPre:'A B D E C F G',ansIn:'D B E A F C G',ansPost:'D E B F G C A',ansLevel:'A B C D E F G'};
+function norm(s){return s.trim().toUpperCase().replace(/[→,]+/g,' ').replace(/\s+/g,' ')}
+function checkAnswers(){let score=0,total=4,lines=[];for(let id in expected){let ok=norm(document.getElementById(id).value)===expected[id];if(ok)score++;lines.push((ok?'✓ ':'✗ ')+id.replace('ans','')+(ok?' đúng':' chưa đúng'));}document.getElementById('feedback').textContent=`Kết quả: ${score}/${total}\\n`+lines.join('\\n')+'\\nHãy giải thích quy tắc duyệt, không chỉ ghi nhớ đáp án.'}
+function downloadReport(){let data={student:document.getElementById('student').value,class:document.getElementById('class').value,answers:{},reflection:document.getElementById('reflection').value,createdAt:new Date().toISOString()};for(let id in expected)data.answers[id]=document.getElementById(id).value;let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='binary_tree_report.json';a.click();URL.revokeObjectURL(a.href)}
+</script></body></html>
